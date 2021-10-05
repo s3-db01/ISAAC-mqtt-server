@@ -7,7 +7,7 @@ const hostname = '127.0.0.2';
 const port = 3000;
 
 function GenerateJsonReport(amount){
-    var reporttemplate = '{"SensorData":[';
+    var reporttemplate = '{"Status": "200","SensorData":[';
     var sensordata = '';
 
     for (var i = 0; i <= amount; i++){
@@ -55,7 +55,7 @@ const server = http.createServer((req, res) => {
         console.log("Disconnected")
     })
 
-    res.end("run");
+    res.end(JSON.stringify(GenerateJsonReport(Math.floor(Math.random()* (5 - 1 + 1) + 1))));
 });
 
 server.listen(port, hostname, () => {
