@@ -6,23 +6,25 @@ const mqtt = require("mqtt");
 const hostname = '127.0.0.1';
 const port = 3001
 
-const server = http.createServer((req, res) => {
-    options={
-        clientId:"mqtt.fhict.nl",
-        username:"i459821_isaac",
-        password:"Gdu7grSJH06E5c",
+var mqttMessage
+
+function MQTTreceiving() {
+    options = {
+        clientId: "mqtt.fhict.nl",
+        username: "i459821_isaac",
+        password: "Gdu7grSJH06E5c",
         port: 8883,
-        clean:true
+        clean: true
     };
-    var client  = mqtt.connect('mqtts://mqtt.fhict.nl', options)
+
+    var client = mqtt.connect('mqtts://mqtt.fhict.nl', options)
 
     client.on('connect', function () {
         console.log("connected")
-        client.subscribe('private/i459821/#',  function(err){
-            if(!err){
+        client.subscribe('private/i459821/#', function (err) {
+            if (!err) {
                 console.log("subscribed");
-            }
-            else{
+            } else {
                 console.log(err);
             }
         })
@@ -31,11 +33,19 @@ const server = http.createServer((req, res) => {
         // message is Buffer
         console.log("recieved");
         console.log(topic.toString());
-        console.log(message.toString())
-        client.end()
+        mqttMessage = JSON.parse(message.toString());
     })
+}
 
-    res.end("run");
+MQTTreceiving();
+const server = http.createServer((req, res) => {
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    if(mqttMessage != null){
+        res.end(JSON.stringify(mqttMessage));
+    }
+    else{
+        res.end('{"status" : "404"}');
+    }
 });
 
 server.listen(port, hostname, () => {
