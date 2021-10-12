@@ -11,6 +11,6 @@ connection.onerror = (error) => {
 }
 
 connection.onmessage = (e) => {
-    connection.send('Message From Client')
+    console.log("--------------------------------")
     console.log(e.data)
 }

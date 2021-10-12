@@ -23,6 +23,10 @@ client.on('connect', function () {
 
 const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 8080 })
+let websocket = new WebSocket("ws://127.0.0.1:8080/");
+wss.on('connection', ws => {
+    websocket = ws;
+})
 
 client.on('message', function (topic, message) {
     // message is Buffer
@@ -30,18 +34,11 @@ client.on('message', function (topic, message) {
     //console.log(topic.toString());
     var returnTopic = topic.toString();
     var splitReturnTopic = returnTopic.split("/")
-    wss.on('connection', ws => {
-        ws.send(message.toString())
-    });
 
+    websocket.send(message.toString());
     //console.log(splitReturnTopic[2], splitReturnTopic[3], splitReturnTopic[4], splitReturnTopic[5], message.toString());
     mqttMessage = JSON.parse(message.toString());
 })
 
-wss.on('connection', ws => {
-    ws.on('message', message => {
-        console.log(`Received message => ${message}`)
-    })
-});
 
 
