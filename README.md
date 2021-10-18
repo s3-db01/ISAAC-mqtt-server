@@ -1,4 +1,7 @@
 # MQTT
+## Installation
+Install the docker container on your system. This can be done via {link}. After you install this
+you can run the project using docker.
 ## Reasoning
 We chose a websocket for the communication to the backend. This is because there will need to be
 a constant update if we get a new message.  If we use a websocket for this it will be able to update
