@@ -24,7 +24,7 @@ client.on('connect', function () {
 var { graphql, buildSchema, GraphQLSchema, GraphQLObjectType, GraphQLString } = require('graphql');
 const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 2020 })
-let websocket = new WebSocket("ws://127.0.0.1:2021/");
+let websocket = new WebSocket("ws://127.0.0.1:2020/");
 wss.on('connection', ws => {
     console.log("connected")
     websocket = ws;
