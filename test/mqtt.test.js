@@ -1,46 +1,45 @@
 const assert = require('assert')
 const mqtt = require("mqtt");
 
+describe('simple mqtt', () => {
+    it('should return true', () => {
+        var mqttMessage
+        var options = {
+            clientId: "mqtt.fhict.nl",
+            username: "i459821_isaac",
+            password: "Gdu7grSJH06E5c",
+            port: 8883,
+            clean: true
+        };
 
+        let connected = false;
 
-describe('#connectedsuccessfull()', async function() {
-    var mqttMessage
-    var options = {
-        clientId: "mqtt.fhict.nl",
-        username: "i459821_isaac",
-        password: "Gdu7grSJH06E5c",
-        port: 8883,
-        clean: true
-    };
+        var client = mqtt.connect('mqtts://mqtt.fhict.nl', options)
 
-    let connected;
+        client.on('connect', function () {
+            connected = true
+            assert.ok(connected)
+        })
+    });
 
-    var client = mqtt.connect('mqtts://mqtt.fhict.nl', options)
+    it('should return false', () => {
+        var mqttMessage
+        var options = {
+            clientId: "mqtt.fhict.nl",
+            username: "i459821_isaac",
+            password: "Gdu7grSJH06E5cssssss",
+            port: 8883,
+            clean: true
+        };
 
-    await client.on('connect', function () {
-        connected = true
-    })
+        let connected = false;
 
-    assert.ok(connected)
-});
+        var client = mqtt.connect('mqtts://mqtt.fhict.nl', options)
 
-describe('#failedtoconnect()', async function() {
-    var mqttMessage
-    var options = {
-        clientId: "wrongurl",
-        username: "i459821_isaac",
-        password: "Gdu7grSJH06E5c",
-        port: 8883,
-        clean: true
-    };
+        client.on('connect', function () {
+            connected = true
+        })
+        assert.ok(!connected)
 
-    let connected;
-
-    var client = mqtt.connect('mqtts://mqtt.fhict.nl', options)
-
-    await client.on('connect', function () {
-        connected = true
-    })
-
-    assert.ok(!connected)
+    });
 });
