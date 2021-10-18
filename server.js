@@ -28,10 +28,7 @@ let websocket = new WebSocket("ws://127.0.0.1:2020/");
 wss.on('connection', ws => {
     websocket = ws;
 })
-wss.on('error', (error) => {
-    //handle error
-    console.log(error.message);
-})
+
 
 client.on('message', function (topic, message) {
     // message is Buffer
@@ -44,6 +41,11 @@ client.on('message', function (topic, message) {
     websocket.send(JSON.stringify(ConvertToJson(splitReturnTopic, message.toString())));
 
     mqttMessage = JSON.parse(message.toString());
+})
+
+wss.on('error', (error) => {
+    //handle error
+    console.log(error.message);
 })
 
 function ConvertToJson(splitTopic, message){
