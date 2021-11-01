@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+<<<<<<< HEAD
     "test": "mocha"
+=======
+    "test": "mocha --exit"
+>>>>>>> d61dc6377c77df3e802624923a97ce4769f59ca4
   },
   "keywords": [],
   "author": "",
