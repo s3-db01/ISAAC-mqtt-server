@@ -7,7 +7,7 @@ var options = {
     port: 8883,
     clean: true
 };
-
+var rateLimit = require('ws-rate-limit')(100, '10s')
 var client = mqtt.connect('mqtts://mqtt.fhict.nl', options)
 
 client.on('connect', function () {
@@ -27,6 +27,7 @@ const wss = new WebSocket.Server({ port: 2020 })
 let websocket = new WebSocket("ws://127.0.0.1:2020/");
 wss.on('connection', ws => {
     console.log("connected")
+    rateLimit(ws);
     websocket = ws;
 })
 
