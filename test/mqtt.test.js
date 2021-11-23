@@ -1,13 +1,14 @@
 const assert = require('assert')
 const mqtt = require("mqtt");
+require('dotenv').config();
 
 describe('simple mqtt', () => {
     it('should return true', () => {
         var mqttMessage
         var options = {
-            clientId: "mqtt.fhict.nl",
-            username: "i459821_isaac",
-            password: "Gdu7grSJH06E5c",
+            clientId: process.env.MQTT_CLIENT,
+            username: process.env.MQTT_USER,
+            password: process.env.MQTT_PASSWORD,
             port: 8883,
             clean: true
         };
@@ -25,9 +26,9 @@ describe('simple mqtt', () => {
     it('should return false', () => {
         var mqttMessage
         var options = {
-            clientId: "mqtt.fhict.nl",
-            username: "i459821_isaac",
-            password: "Gdu7grSJH06E5cssssss",
+            clientId: process.env.MQTT_CLIENT,
+            username: process.env.MQTT_USER,
+            password: process.env.MQTT_PASSWORD,
             port: 8883,
             clean: true
         };
