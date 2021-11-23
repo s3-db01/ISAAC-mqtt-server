@@ -29,7 +29,12 @@ const wss = new WebSocket.Server({ port: 2020 })
 let websocket = new WebSocket("ws://127.0.0.1:2020/");
 wss.on('connection', ws => {
     rateLimit(ws);
+    console.log("connected")
     websocket = ws;
+})
+
+wss.on('disconnect', ws => {
+    console.log("disconnect")
 })
 
 client.on('message', function (topic, message) {
@@ -43,6 +48,11 @@ client.on('message', function (topic, message) {
     websocket.send(JSON.stringify(ConvertToJson(splitReturnTopic, message.toString())));
 
     mqttMessage = JSON.parse(message.toString());
+})
+
+wss.on('error', (error) => {
+    //handle error
+    console.log(error.message);
 })
 
 function ConvertToJson(splitTopic, message){
