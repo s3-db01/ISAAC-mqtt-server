@@ -1,8 +1,6 @@
 name: Docker Image MQTT clinet
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
 
