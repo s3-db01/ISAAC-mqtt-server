@@ -1,13 +1,15 @@
 const mqtt = require("mqtt");
+require('dotenv').config();
+
 var mqttMessage
 var options = {
-    clientId: "mqtt.fhict.nl",
-    username: "i459821_isaac",
-    password: "Gdu7grSJH06E5c",
+    clientId: process.env.MQTT_CLIENT,
+    username: process.env.MQTT_USER,
+    password: process.env.MQTT_PASSWORD,
     port: 8883,
     clean: true
 };
-
+var rateLimit = require('ws-rate-limit')(100, '10s')
 var client = mqtt.connect('mqtts://mqtt.fhict.nl', options)
 
 client.on('connect', function () {
@@ -26,6 +28,7 @@ const WebSocket = require('ws')
 const wss = new WebSocket.Server({ port: 2020 })
 let websocket = new WebSocket("ws://127.0.0.1:2020/");
 wss.on('connection', ws => {
+    rateLimit(ws);
     console.log("connected")
     websocket = ws;
 })
