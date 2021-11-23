@@ -1,9 +1,11 @@
 const mqtt = require("mqtt");
+require('dotenv').config();
+
 var mqttMessage
 var options = {
-    clientId: "mqtt.fhict.nl",
-    username: "i459821_isaac",
-    password: "Gdu7grSJH06E5c",
+    clientId: process.env.MQTT_CLIENT,
+    username: process.env.MQTT_USER,
+    password: process.env.MQTT_PASSWORD,
     port: 8883,
     clean: true
 };
