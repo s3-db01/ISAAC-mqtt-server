@@ -54,7 +54,7 @@ client.on('message', function (topic, message) {
     console.log(data)
 
     axios
-        .get('http://localhost:3001/api/sensors/')
+        .get('http://ISAAC-sensor-back-end:3001/api/sensors/')
         .then(res => {
 
             const sensor = res.data.find( ({ x_coordinate, y_coordinate }) => x_coordinate === data.sensordata[0]["x-coord"] && y_coordinate === data.sensordata[0]["y-coord"])
@@ -63,7 +63,7 @@ client.on('message', function (topic, message) {
                 console.log("SENSOR:   " + data.sensordata[0]["x-coord"] +"-"+ data.sensordata[0]["y-coord"]);
 
                 axios
-                    .post('http://localhost:3001/api/sensors', {
+                    .post('http://ISAAC-sensor-back-end:3001/api/sensors', {
                         floor_id: 1,
                         x_coordinate: data.sensordata[0]["x-coord"],
                         y_coordinate: data.sensordata[0]["y-coord"],
@@ -75,7 +75,7 @@ client.on('message', function (topic, message) {
             }
 
             axios
-                .post('http://localhost:3002/api/sensorlogs', {
+                .post('http://ISAAC-sensor-log-back-end:3002/api/sensorlogs', {
                     x_coordinate : data.sensordata[0]["x-coord"],
                     y_coordinate : data.sensordata[0]["y-coord"],
                     humidity: data.sensordata[0]["humidity"],
