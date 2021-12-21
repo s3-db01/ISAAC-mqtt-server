@@ -25,6 +25,7 @@ client.on('connect', function () {
 
 var { graphql, buildSchema, GraphQLSchema, GraphQLObjectType, GraphQLString } = require('graphql');
 const WebSocket = require('ws')
+const axios = require("axios");
 const wss = new WebSocket.Server({ port: 2020 })
 let websocket = new WebSocket("ws://127.0.0.1:2020/");
 wss.on('connection', ws => {
@@ -47,7 +48,47 @@ client.on('message', function (topic, message) {
     console.log(splitReturnTopic[2], splitReturnTopic[3], splitReturnTopic[4], splitReturnTopic[5], message.toString());
     websocket.send(JSON.stringify(ConvertToJson(splitReturnTopic, message.toString())));
 
-    mqttMessage = JSON.parse(message.toString());
+    data2 = JSON.stringify(ConvertToJson(splitReturnTopic, message.toString()));
+
+    const data = JSON.parse(data2);
+    console.log(data)
+
+    axios
+        .get('http://localhost:3001/api/sensors/')
+        .then(res => {
+
+            const sensor = res.data.find( ({ x_coordinate, y_coordinate }) => x_coordinate === data.sensordata[0]["x-coord"] && y_coordinate === data.sensordata[0]["y-coord"])
+
+            if (sensor === undefined) {
+                console.log("SENSOR:   " + data.sensordata[0]["x-coord"] +"-"+ data.sensordata[0]["y-coord"]);
+
+                axios
+                    .post('http://localhost:3001/api/sensors', {
+                        floor_id: 1,
+                        x_coordinate: data.sensordata[0]["x-coord"],
+                        y_coordinate: data.sensordata[0]["y-coord"],
+                        flagged_faulty: null
+                    })
+                    .catch((error) => {
+                        console.error(error)
+                    })
+            }
+
+            axios
+                .post('http://localhost:3002/api/sensorlogs', {
+                    x_coordinate : data.sensordata[0]["x-coord"],
+                    y_coordinate : data.sensordata[0]["y-coord"],
+                    humidity: data.sensordata[0]["humidity"],
+                    temperature: data.sensordata[0]["temperature"],
+                    up_time:  data.sensordata[0]["uptime"],
+                })
+                .catch((error) => {
+                    console.error(error)
+                })
+        })
+        .catch((error) => {
+            console.error(error)
+        })
 })
 
 wss.on('error', (error) => {
