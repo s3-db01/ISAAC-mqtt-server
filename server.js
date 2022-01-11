@@ -38,6 +38,20 @@ wss.on('disconnect', ws => {
     console.log("disconnect")
 })
 
+function createSensorLog(dataMQTT) {
+    axios
+        .post('http://localhost:3002/api/sensorlogs', {
+            x_coordinate: dataMQTT.sensordata[0]["x-coord"],
+            y_coordinate: dataMQTT.sensordata[0]["y-coord"],
+            humidity: dataMQTT.sensordata[0]["humidity"],
+            temperature: dataMQTT.sensordata[0]["temperature"],
+            up_time:  dataMQTT.sensordata[0]["uptime"],
+        })
+        .catch((error) => {
+            console.error(error)
+        })
+}
+
 client.on('message', function (topic, message) {
     // message is Buffer
     console.log("recieved");
@@ -68,7 +82,7 @@ client.on('message', function (topic, message) {
                         console.error(error)
                     })
 
-                console.log("SENSOR ZELF AANGEMAAKT!!!!!")
+                createSensorLog(dataMQTT)
             }
             else{
                 axios
@@ -88,8 +102,6 @@ client.on('message', function (topic, message) {
                                 .catch((error) => {
                                     console.error(error)
                                 })
-
-                            console.log("SENSOR LOG AANGEMAAKT!!!!!")
                         }
                         else if (dataMQTT.sensordata[0]["humidity"] != null) {
                             if (latestSensorLog["humidity"] == null) {
@@ -105,17 +117,7 @@ client.on('message', function (topic, message) {
                                     })
                             }
                             else {
-                                axios
-                                    .post('http://localhost:3002/api/sensorlogs', {
-                                        x_coordinate: dataMQTT.sensordata[0]["x-coord"],
-                                        y_coordinate: dataMQTT.sensordata[0]["y-coord"],
-                                        humidity: dataMQTT.sensordata[0]["humidity"],
-                                        temperature: dataMQTT.sensordata[0]["temperature"],
-                                        up_time:  dataMQTT.sensordata[0]["uptime"],
-                                    })
-                                    .catch((error) => {
-                                        console.error(error)
-                                    })
+                                createSensorLog(dataMQTT)
                             }
                         }
                         else if (dataMQTT.sensordata[0]["temperature"] != null) {
@@ -133,17 +135,7 @@ client.on('message', function (topic, message) {
                                     })
                             }
                             else {
-                                axios
-                                    .post('http://localhost:3002/api/sensorlogs', {
-                                        x_coordinate: dataMQTT.sensordata[0]["x-coord"],
-                                        y_coordinate: dataMQTT.sensordata[0]["y-coord"],
-                                        humidity: dataMQTT.sensordata[0]["humidity"],
-                                        temperature: dataMQTT.sensordata[0]["temperature"],
-                                        up_time:  dataMQTT.sensordata[0]["uptime"],
-                                    })
-                                    .catch((error) => {
-                                        console.error(error)
-                                    })
+                                createSensorLog(dataMQTT)
                             }
                         }
                         else if (dataMQTT.sensordata[0]["uptime"] != null) {
@@ -161,17 +153,7 @@ client.on('message', function (topic, message) {
                                     })
                             }
                             else {
-                                axios
-                                    .post('http://localhost:3002/api/sensorlogs', {
-                                        x_coordinate: dataMQTT.sensordata[0]["x-coord"],
-                                        y_coordinate: dataMQTT.sensordata[0]["y-coord"],
-                                        humidity: dataMQTT.sensordata[0]["humidity"],
-                                        temperature: dataMQTT.sensordata[0]["temperature"],
-                                        up_time:  dataMQTT.sensordata[0]["uptime"],
-                                    })
-                                    .catch((error) => {
-                                        console.error(error)
-                                    })
+                                createSensorLog(dataMQTT)
                             }
                         }
                     })
