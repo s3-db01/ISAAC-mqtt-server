@@ -42,49 +42,140 @@ client.on('message', function (topic, message) {
     // message is Buffer
     console.log("recieved");
     //console.log(topic.toString());
-    var returnTopic = topic.toString();
-    var splitReturnTopic = returnTopic.split("/")
+    const returnTopic = topic.toString();
+    const splitReturnTopic = returnTopic.split("/");
 
     console.log(splitReturnTopic[2], splitReturnTopic[3], splitReturnTopic[4], splitReturnTopic[5], message.toString());
     websocket.send(JSON.stringify(ConvertToJson(splitReturnTopic, message.toString())));
 
-    data2 = JSON.stringify(ConvertToJson(splitReturnTopic, message.toString()));
-
-    const data = JSON.parse(data2);
-    console.log(data)
+    let data = JSON.stringify(ConvertToJson(splitReturnTopic, message.toString()));
+    const dataMQTT = JSON.parse(data);
 
     axios
         .get('http://localhost:3001/api/sensors/')
         .then(res => {
-
-            const sensor = res.data.find( ({ x_coordinate, y_coordinate }) => x_coordinate === data.sensordata[0]["x-coord"] && y_coordinate === data.sensordata[0]["y-coord"])
+            const sensor = res.data.find( ({ x_coordinate, y_coordinate }) => x_coordinate === dataMQTT.sensordata[0]["x-coord"] && y_coordinate === dataMQTT.sensordata[0]["y-coord"])
 
             if (sensor === undefined) {
-                console.log("SENSOR:   " + data.sensordata[0]["x-coord"] +"-"+ data.sensordata[0]["y-coord"]);
-
                 axios
                     .post('http://localhost:3001/api/sensors', {
                         floor_id: 1,
-                        x_coordinate: data.sensordata[0]["x-coord"],
-                        y_coordinate: data.sensordata[0]["y-coord"],
+                        x_coordinate: dataMQTT.sensordata[0]["x-coord"],
+                        y_coordinate: dataMQTT.sensordata[0]["y-coord"],
                         flagged_faulty: null
                     })
                     .catch((error) => {
                         console.error(error)
                     })
-            }
 
-            axios
-                .post('http://localhost:3002/api/sensorlogs', {
-                    x_coordinate : data.sensordata[0]["x-coord"],
-                    y_coordinate : data.sensordata[0]["y-coord"],
-                    humidity: data.sensordata[0]["humidity"],
-                    temperature: data.sensordata[0]["temperature"],
-                    up_time:  data.sensordata[0]["uptime"],
-                })
-                .catch((error) => {
-                    console.error(error)
-                })
+                console.log("SENSOR ZELF AANGEMAAKT!!!!!")
+            }
+            else{
+                axios
+                    .get('http://localhost:3002/api/sensorlogs/'+dataMQTT.sensordata[0]["x-coord"]+"-"+dataMQTT.sensordata[0]["y-coord"])
+                    .then(res => {
+                        const latestSensorLog = res.data
+
+                        if (latestSensorLog.length === 0) {
+                            axios
+                                .post('http://localhost:3002/api/sensorlogs', {
+                                    x_coordinate: dataMQTT.sensordata[0]["x-coord"],
+                                    y_coordinate: dataMQTT.sensordata[0]["y-coord"],
+                                    humidity: dataMQTT.sensordata[0]["humidity"],
+                                    temperature: dataMQTT.sensordata[0]["temperature"],
+                                    up_time:  dataMQTT.sensordata[0]["uptime"],
+                                })
+                                .catch((error) => {
+                                    console.error(error)
+                                })
+
+                            console.log("SENSOR LOG AANGEMAAKT!!!!!")
+                        }
+                        else if (dataMQTT.sensordata[0]["humidity"] != null) {
+                            if (latestSensorLog["humidity"] == null) {
+                                axios
+                                    .put('http://localhost:3002/api/sensorlogs/'+dataMQTT.sensordata[0]["x-coord"]+"-"+dataMQTT.sensordata[0]["y-coord"], {
+                                        "sensor_id": latestSensorLog["sensor_id:"],
+                                        "humidity": dataMQTT.sensordata[0]["humidity"],
+                                        "temperature": latestSensorLog["temperature"],
+                                        "up_time": latestSensorLog["uptime"],
+                                    })
+                                    .catch((error) => {
+                                        console.error(error)
+                                    })
+                            }
+                            else {
+                                axios
+                                    .post('http://localhost:3002/api/sensorlogs', {
+                                        x_coordinate: dataMQTT.sensordata[0]["x-coord"],
+                                        y_coordinate: dataMQTT.sensordata[0]["y-coord"],
+                                        humidity: dataMQTT.sensordata[0]["humidity"],
+                                        temperature: dataMQTT.sensordata[0]["temperature"],
+                                        up_time:  dataMQTT.sensordata[0]["uptime"],
+                                    })
+                                    .catch((error) => {
+                                        console.error(error)
+                                    })
+                            }
+                        }
+                        else if (dataMQTT.sensordata[0]["temperature"] != null) {
+                            if (latestSensorLog["temperature"] == null) {
+                                axios
+                                    .put('http://localhost:3002/api/sensorlogs/'+dataMQTT.sensordata[0]["x-coord"]+"-"+dataMQTT.sensordata[0]["y-coord"], {
+                                        "id": latestSensorLog["id"],
+                                        "sensor_id": latestSensorLog["sensor_id:"],
+                                        "humidity": latestSensorLog["humidity:"],
+                                        "temperature": dataMQTT.sensordata[0]["temperature"],
+                                        "up_time": latestSensorLog["uptime"],
+                                    })
+                                    .catch((error) => {
+                                        console.error(error)
+                                    })
+                            }
+                            else {
+                                axios
+                                    .post('http://localhost:3002/api/sensorlogs', {
+                                        x_coordinate: dataMQTT.sensordata[0]["x-coord"],
+                                        y_coordinate: dataMQTT.sensordata[0]["y-coord"],
+                                        humidity: dataMQTT.sensordata[0]["humidity"],
+                                        temperature: dataMQTT.sensordata[0]["temperature"],
+                                        up_time:  dataMQTT.sensordata[0]["uptime"],
+                                    })
+                                    .catch((error) => {
+                                        console.error(error)
+                                    })
+                            }
+                        }
+                        else if (dataMQTT.sensordata[0]["uptime"] != null) {
+                            if (latestSensorLog["uptime"] == null) {
+                                axios
+                                    .put('http://localhost:3002/api/sensorlogs/'+dataMQTT.sensordata[0]["x-coord"]+"-"+dataMQTT.sensordata[0]["y-coord"], {
+                                        "id": latestSensorLog["id"],
+                                        "sensor_id": latestSensorLog["sensor_id:"],
+                                        "humidity": latestSensorLog["humidity:"],
+                                        "temperature": latestSensorLog["temperature"],
+                                        "up_time": dataMQTT.sensordata[0]["uptime"]
+                                    })
+                                    .catch((error) => {
+                                        console.error(error)
+                                    })
+                            }
+                            else {
+                                axios
+                                    .post('http://localhost:3002/api/sensorlogs', {
+                                        x_coordinate: dataMQTT.sensordata[0]["x-coord"],
+                                        y_coordinate: dataMQTT.sensordata[0]["y-coord"],
+                                        humidity: dataMQTT.sensordata[0]["humidity"],
+                                        temperature: dataMQTT.sensordata[0]["temperature"],
+                                        up_time:  dataMQTT.sensordata[0]["uptime"],
+                                    })
+                                    .catch((error) => {
+                                        console.error(error)
+                                    })
+                            }
+                        }
+                    })
+            }
         })
         .catch((error) => {
             console.error(error)
