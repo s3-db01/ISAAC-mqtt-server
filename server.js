@@ -53,9 +53,7 @@ function createSensorLog(dataMQTT) {
 }
 
 client.on('message', function (topic, message) {
-    // message is Buffer
     console.log("recieved");
-    //console.log(topic.toString());
     const returnTopic = topic.toString();
     const splitReturnTopic = returnTopic.split("/");
 
@@ -90,27 +88,14 @@ client.on('message', function (topic, message) {
                     .then(res => {
                         const latestSensorLog = res.data
 
-                        if (latestSensorLog.length === 0) {
-                            axios
-                                .post('http://localhost:3002/api/sensorlogs', {
-                                    x_coordinate: dataMQTT.sensordata[0]["x-coord"],
-                                    y_coordinate: dataMQTT.sensordata[0]["y-coord"],
-                                    humidity: dataMQTT.sensordata[0]["humidity"],
-                                    temperature: dataMQTT.sensordata[0]["temperature"],
-                                    up_time:  dataMQTT.sensordata[0]["uptime"],
-                                })
-                                .catch((error) => {
-                                    console.error(error)
-                                })
-                        }
-                        else if (dataMQTT.sensordata[0]["humidity"] != null) {
-                            if (latestSensorLog["humidity"] == null) {
+                        if (dataMQTT.sensordata[0]["humidity"] != null) {
+                            if (latestSensorLog[0]["humidity"] == null) {
                                 axios
                                     .put('http://localhost:3002/api/sensorlogs/'+dataMQTT.sensordata[0]["x-coord"]+"-"+dataMQTT.sensordata[0]["y-coord"], {
-                                        "sensor_id": latestSensorLog["sensor_id:"],
+                                        "sensor_id": latestSensorLog[0]["sensor_id:"],
                                         "humidity": dataMQTT.sensordata[0]["humidity"],
-                                        "temperature": latestSensorLog["temperature"],
-                                        "up_time": latestSensorLog["uptime"],
+                                        "temperature": latestSensorLog[0]["temperature"],
+                                        "up_time": latestSensorLog[0]["uptime"],
                                     })
                                     .catch((error) => {
                                         console.error(error)
@@ -121,14 +106,14 @@ client.on('message', function (topic, message) {
                             }
                         }
                         else if (dataMQTT.sensordata[0]["temperature"] != null) {
-                            if (latestSensorLog["temperature"] == null) {
+                            if (latestSensorLog[0]["temperature"] == null) {
                                 axios
                                     .put('http://localhost:3002/api/sensorlogs/'+dataMQTT.sensordata[0]["x-coord"]+"-"+dataMQTT.sensordata[0]["y-coord"], {
-                                        "id": latestSensorLog["id"],
-                                        "sensor_id": latestSensorLog["sensor_id:"],
-                                        "humidity": latestSensorLog["humidity:"],
+                                        "id": latestSensorLog[0]["id"],
+                                        "sensor_id": latestSensorLog[0]["sensor_id:"],
+                                        "humidity": latestSensorLog[0]["humidity:"],
                                         "temperature": dataMQTT.sensordata[0]["temperature"],
-                                        "up_time": latestSensorLog["uptime"],
+                                        "up_time": latestSensorLog[0]["uptime"],
                                     })
                                     .catch((error) => {
                                         console.error(error)
@@ -139,13 +124,13 @@ client.on('message', function (topic, message) {
                             }
                         }
                         else if (dataMQTT.sensordata[0]["uptime"] != null) {
-                            if (latestSensorLog["uptime"] == null) {
+                            if (latestSensorLog[0]["uptime"] == null) {
                                 axios
                                     .put('http://localhost:3002/api/sensorlogs/'+dataMQTT.sensordata[0]["x-coord"]+"-"+dataMQTT.sensordata[0]["y-coord"], {
-                                        "id": latestSensorLog["id"],
-                                        "sensor_id": latestSensorLog["sensor_id:"],
-                                        "humidity": latestSensorLog["humidity:"],
-                                        "temperature": latestSensorLog["temperature"],
+                                        "id": latestSensorLog[0]["id"],
+                                        "sensor_id": latestSensorLog[0]["sensor_id:"],
+                                        "humidity": latestSensorLog[0]["humidity:"],
+                                        "temperature": latestSensorLog[0]["temperature"],
                                         "up_time": dataMQTT.sensordata[0]["uptime"]
                                     })
                                     .catch((error) => {
@@ -165,13 +150,11 @@ client.on('message', function (topic, message) {
 })
 
 wss.on('error', (error) => {
-    //handle error
     console.log(error.message);
 })
 
 function ConvertToJson(splitTopic, message){
-
-    var jsontemplate = '{"sensordata":[{"Floor" : '+splitTopic[2]+',"x-coord": '+splitTopic[3]+',"y-coord": '+splitTopic[4]+',"'+splitTopic[5]+'": '+message+'}]}'
+    const jsontemplate = '{"sensordata":[{"Floor" : ' + splitTopic[2] + ',"x-coord": ' + splitTopic[3] + ',"y-coord": ' + splitTopic[4] + ',"' + splitTopic[5] + '": ' + message + '}]}';
 
     return JSON.parse(jsontemplate);
 }
